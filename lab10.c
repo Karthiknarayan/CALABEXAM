@@ -1,79 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-#define num_instructions 6
-#define num_functional_units 2
-typedef struct 
+#define n 50
+#define true 1
+#define false 0
+int main(int argc,char *argv[])
 {
-   char type;   
-   int src1;
-   int src2;
-   int target;
-}Instructions;
-typedef struct 
+    int nthreads;
+    int i;
+    int found;
+    int *a;
+
+    if(argc>1)
+    {
+        nthreads=atoi(argv[1]);
+        if(omp_get_dynamic())
+        {
+            omp_set_dynamic(0);
+        }
+        omp_set_num_threads(nthreads);
+    }
+    printf("max threads=%d\n",omp_get_max_threads);
+
+    a=(int *)malloc((n+1)*sizeof(int));
+int k=2;
+for(int i=2;i<=n;i++)
+a[i]=1;
+while (k*k<=n)
 {
-   char type;   
-   int op1;
-   int op2;
-   int result;
-   int status;
-}Functional_units;
-
-
-Instructions inst[num_instructions]={
-     {'A', 2, 3, 1}, // Add R1 = R2 + R3
-    {'M', 4, 5, 2}, // Multiply R2 = R4 * R5
-    {'A', 1, 2, 3}, // Add R3 = R1 + R2
-    {'M', 3, 3, 4}, // Multiply R4 = R3 * R3
-    {'A', 5, 4, 5}, // Add R5 = R5 + R4
-    {'M', 2, 2, 6}  // Multiply R6 = R2 * R2
-};
-Functional_units units[num_functional_units];
-
-void execution(int statusid,Instructions inst)
-{
-   for (int i = 0; i < 100000000; ++i); 
-if(inst.type=='A')
-units[statusid].result=inst.src1+inst.src2;
-else if(inst.type=='M')
-units[statusid].result=inst.src1*inst.src2;
-
-units[statusid].status=0;
+    for(i=k*k;i<=n;i+=k)
+    a[i]=0;
+    found=false;
+    for(i=k+1;!found;i++)
+    {
+        if(a[i])
+        {
+            k=i;
+            found=true;
+        }
+    }
 }
-int main()
+int count=0;
+for(i=2;i<=n;i++)
 {
-    int i,j,unitid;
+    if(a[i])
+    count++;
 
-    for(i=0;i<num_functional_units;i++)
-    units[i].status=0;
+}
+printf("total prime numbers between 0 to 50 id %d\n",count);
 
-    #pragma omp parallel for num_threads(num_instructions)
-    for(i=0;i<num_instructions;i++)
-    {
-        unitid=-1;
-    
-
-    #pragma omp critical
-    {
-
-        for(j=0;j<num_functional_units;j++)
-                if(units[j].status==0)
-                     {
-                         unitid=j;
-                        units[j].status=1;
-                         break;
-                     }
-    }
-    if(unitid!=-1)
-    {
-        execution(unitid,inst[i]);
-        printf("executed instruction %d\n result is stoted in %d\n\n",i+1, units[unitid].result);
-
-    }
-else{
-printf("no free functional unit\n");
-    }
-    }
-return 0;
-    
 }
