@@ -4,7 +4,7 @@
 int a,b,i,tid;
 int threads;
 float x;
-#pragma omp threadprivate(a,x)
+#pragma omp firstprivate(a,x)
 int main()
 {
     omp_set_dynamic(0);

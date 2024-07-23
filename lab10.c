@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-#define n 50
+#define n 10
 #define true 1
 #define false 0
 int main(int argc,char *argv[])
@@ -20,7 +20,7 @@ int main(int argc,char *argv[])
         }
         omp_set_num_threads(nthreads);
     }
-    printf("max threads=%d\n",omp_get_max_threads);
+    printf("max threads=%d\n",omp_get_max_threads());
 
     a=(int *)malloc((n+1)*sizeof(int));
 int k=2;
